@@ -1,0 +1,6 @@
+folder=$1
+var=1
+for entry in `ls $folder`; do
+rosbag filter $folder/$entry $folder/${entry}_filtered.bag "topic=='/vmc_navserver/state' or topic=='/vmc_navserver/odom' or topic=='/tf' or topic=='/velodyne_packets'"
+
+done
