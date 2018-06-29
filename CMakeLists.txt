@@ -1,30 +1,39 @@
 cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+project(bag_editor)
+set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_BUILD_TYPE release)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+if("$ENV{ROS_DISTRO}" STREQUAL "indigo")
+    add_definitions(-std=c++11)
+endif()
+find_package(catkin REQUIRED
+    geometry_msgs
+    cmake_modules
+    eigen_conversions
+    pcl_ros
+    roscpp
+    sensor_msgs
+    std_msgs
+    tf_conversions
+    tf
+    genmsg
+    tf_conversions
+    )
 
-rosbuild_init()
+find_package(cmake_modules REQUIRED)
+find_package(Eigen REQUIRED COMPONENTS)
+catkin_package(
+    #DEPENDS Eigen libpcl-all-dev gnuplot
+    #   CATKIN_DEPENDS ndt_registration ndt_map roscpp laser_geometry sensor_msgs tf_conversions tf geometry_msgs cmake_modules eigen_conversions pcl_ros
+    DEPENDS Eigen libpcl-all-dev
+    CATKIN_DEPENDS  roscpp sensor_msgs tf_conversions tf geometry_msgs cmake_modules eigen_conversions pcl_ros std_msgs genmsg
+    #LIBRARIES ${PROJECT_NAME}
+    )
+include_directories(include  ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} )
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#uncomment if you have defined messages
-#rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
+add_executable(merge_bag src/merge_bag.cpp )
+target_link_libraries(merge_bag  ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
+
+
